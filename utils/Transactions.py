@@ -12,7 +12,9 @@ class Transactions:
                  operation_id: int,
                  sum_operation: float,
                  currency: str,
-                 destination:str):
+                 destination:str,
+                 sender: str
+                ):
         self.date = date
         self.description = description
         self.state = state
@@ -20,33 +22,58 @@ class Transactions:
         self.sum_operation = sum_operation
         self.currency = currency
         self.destination = destination
+        self.sender = sender
 
     def get_date(self) -> None:
         """Функция возвращает дату формата ДД.ММ.ГГГ"""
+        
         the_date = datetime.fromisoformat(self.date)
         date = the_date.strftime('%d.%m.%Y')
+        
         return date
 
-    def get_description(self) -> None:
-        line_output = f"{self.date()} {self.description}\n"
+    def gets_a_hidden_score_sender(self):
+        """Функция выводит информацию о карте и скрывает часть номера карты отправителя"""
+        # Номер карты замаскирован и не отображается целиком в формате MasterCard XXXX XX** **** XXXX 
+        string = self.sender
 
+        info_hidden_number =string.split(' ')
 
-    def get_operationAmount(self) -> None:
-        """Сумма операции"""
-        self.returns_executed("operationAmount")("amount")
+        string_list = string.split()[-1]
+        star = len(string_list) - 10
+        card_number = string_list[:6] + star * "*" + string_list[-4:]
+        card_number = [card_number[i:i+4] for i in range(0, len(card_number), 4)]
+        card_number = " ".join(card_number)
+        info_hidden_number[-1] = "".join(card_number)
+        
+        return " ".join(info_hidden_number)
 
-    def transaction_currency(self) -> None:
-        """Валюта операции"""
-        self.returns_executed("operationAmount")("currency")("name")
+    def get_hidde_beneficiary_account(self):
+        """Функция выводит счет скрывает часть номера счета получателя"""
+        # Номер счета замаскирован и не отображается целиком в формате  **XXXX 
+        account_number = self.destination
 
-    def get_description(self) -> None:
-        """Описание операции"""
-        self.returns_executed("description")
+        hidden_beneficiary_account = account_number.split(' ')
 
-    def get_from(self) -> None:
-        """От кого или от куда"""
-        self.returns_executed("from")
+        hidden_account = account_number.split()[-1]
+        hidden_account = '**' + account_number[-4:]
+        hidden_beneficiary_account[-1] = "".join(hidden_account)
 
-    def get_to(self) -> None:
-        """Куда или кому"""
-        self.returns_executed("to")
+        return " ".join(hidden_beneficiary_account)
+
+    def get_description_operation(self) -> None:
+        """Функция выводит описание операции"""
+        # <дата перевода> <описание перевода>
+        line_output = f"{self.get_date()} {self.description}\n"
+
+        # <откуда> -> <куда> 
+        if self.sender in not None:
+            line_output += f"{self.gets_a_hidden_score_sender()} -> {self.get_hidde_beneficiary_account()}\n"
+        else:
+            line_output += f"{self.get_hidde_beneficiary_account()}\n"
+            
+        # <сумма перевода> <валюта>
+        line_output += f"{self.sum_operation} {self.currency}\n"
+
+        return line_output
+            
