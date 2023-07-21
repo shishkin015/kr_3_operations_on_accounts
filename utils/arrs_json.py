@@ -34,7 +34,8 @@ def production_elements_operations(last_five_surgeries: list) -> list:
         sum_operation = float(element["operationAmount"]['amount'])
         currency = element["operationAmount"]['currency']["name"]
         destination = element["to"]
+        sender = element["from"]
 
-        element = Transactions(date, description, state, operation_id, sum_operation, currency, destination)
+        element = Transactions(date, description, state, operation_id, sum_operation, currency, destination, sender)
 
     return last_five_surgeries
