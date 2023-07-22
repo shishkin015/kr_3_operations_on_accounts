@@ -1,5 +1,6 @@
+from tests.conftest import open_json
 from utils.Transactions import Transactions
-from utils.arrs_json import production_elements_operations, sorts_the_list_by_date
+from utils.arrs_json import production_elements_operations, sorts_the_list_by_date, transforms_operations
 
 
 def test_gets_a_hidden_score_sender(hidden_sender_information):
@@ -21,17 +22,14 @@ def test_get_date(date_data):
 
 
 def test_get_description_operation(data_for_operation_description):
-    # positive_test = data_for_operation_description
+    expected_result = data_for_operation_description
 
-    file = open_json('F:/PyCharm SkyP/kr_3_operations_on_accounts/tests/test.json')
+    file = transforms_operations('F:/PyCharm SkyP/kr_3_operations_on_accounts/tests/test.json')
 
     file = production_elements_operations(file)
     file = sorts_the_list_by_date(file)
 
-    # index = 0
+    index = 0
     for element in file:
-        assert element.get_description_operation() == data_for_operation_description[0]
-        assert element.get_description_operation() == data_for_operation_description[1]
-
-
-# "sender", "date", "description", "state", "operation_id", "sum_operation", "currency", 'destination'
+        assert element.get_description_operation() == str(expected_result[index])
+        index += 1
